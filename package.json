@@ -1,0 +1,30 @@
+{
+  "name": "week1",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "spl_init": "tsx ts/cluster1/spl_init.ts",
+    "spl_mint": "tsx ts/cluster1/spl_mint.ts",
+    "spl_transfer": "tsx ts/cluster1/spl_transfer.ts",
+    "nft_mint": "tsx ts/cluster1/nft_mint.ts",
+    "nft_update": "tsx ts/cluster1/nft_update.ts",
+    "nft_transfer": "tsx ts/cluster1/nft_transfer.ts",
+    "nft_burn": "tsx ts/cluster1/nft_burn.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-core": "^1.9.0",
+    "@metaplex-foundation/umi": "^1.4.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.4.1",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
+  }
+}

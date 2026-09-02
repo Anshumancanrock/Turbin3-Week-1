@@ -1,0 +1,10 @@
+node_modules/
+wallet.json
+ts/cluster1/wallet.json
+ts/cluster1/mint.txt
+ts/cluster1/asset.txt
+ts/cluster1/new_owner.txt
+programs/*.so
+test-ledger/
+*.log
+.DS_Store
