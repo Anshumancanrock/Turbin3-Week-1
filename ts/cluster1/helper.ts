@@ -24,7 +24,7 @@ export const connection = new Connection(RPC, "confirmed");
 export function loadWallet() {
   const walletPath = path.join(dir, "wallet.json");
   if (!fs.existsSync(walletPath)) {
-    throw new Error("missing ts/cluster1/wallet.json — copy your id.json there");
+    throw new Error("missing ts/cluster1/wallet.json, copy your id.json there");
   }
   const secret = JSON.parse(fs.readFileSync(walletPath, "utf8"));
   return Keypair.fromSecretKey(Uint8Array.from(secret));
@@ -56,7 +56,7 @@ export async function airdrop(kp: Keypair) {
   throw new Error("airdrop did not land");
 }
 
-// works on localnet and devnet — new owner needs SOL to burn later
+// send a bit of sol, dest needs it to sign later
 export async function sendSol(from: Keypair, to: PublicKey, lamports = 10_000_000) {
   const tx = new Transaction().add(
     SystemProgram.transfer({

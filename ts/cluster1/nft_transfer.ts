@@ -13,7 +13,6 @@ const assetAddress = publicKey(load("asset.txt"));
     await airdrop(keypair);
 
     const to = Keypair.generate();
-    // so burn works on devnet too, not just local airdrop
     await sendSol(keypair, to.publicKey);
 
     const asset = await fetchAsset(umi, assetAddress);

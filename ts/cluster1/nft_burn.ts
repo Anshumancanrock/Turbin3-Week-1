@@ -10,7 +10,7 @@ import { airdrop, connection, fail, getUmi, load } from "./helper.js";
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const assetAddress = publicKey(load("asset.txt"));
 
-// burn has to be signed by the current owner, which is the keypair from nft_transfer
+// current owner is the keypair nft_transfer wrote
 const owner = Keypair.fromSecretKey(
   Uint8Array.from(JSON.parse(fs.readFileSync(path.join(dir, "new_owner.txt"), "utf8")))
 );
@@ -24,9 +24,8 @@ const umi = getUmi(owner);
     let result = await burn(umi, { asset }).sendAndConfirm(umi);
     console.log("burned:", bs58.encode(result.signature));
 
-    // core doesn't fully close the account — it leaves a 1-byte tombstone
     const info = await connection.getAccountInfo(new PublicKey(assetAddress));
-    console.log("tombstone bytes:", info?.data.length, "lamports left:", info?.lamports);
+    console.log("account size:", info?.data.length, "lamports:", info?.lamports);
   } catch (error) {
     fail(error);
   }

@@ -30,7 +30,7 @@ async function run(script: string) {
 }
 
 describe("cluster1 scripts", () => {
-  it("runs the assignment scripts and fails on a burned asset", async () => {
+  it("scripts work, update after burn exits 1", async () => {
     const kp = Keypair.generate();
     await fund(kp);
     fs.writeFileSync(

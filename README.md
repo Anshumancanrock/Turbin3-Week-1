@@ -1,6 +1,6 @@
 # Week 1
 
-SPL token + MPL Core NFT.
+SPL token + mpl core nft.
 
 ```
 cp ~/.config/solana/id.json ts/cluster1/wallet.json
@@ -15,9 +15,9 @@ npm run spl_mint
 npm run spl_transfer
 ```
 
-1000 tokens (6 decimals), then 250 to another wallet. Recipient key is saved to `spl_to.txt`.
+mint 1000 (6 decimals), send 250. dest keypair goes in `spl_to.txt`.
 
-## NFT (MPL Core)
+## NFT
 
 ```
 npm run nft_mint
@@ -26,21 +26,19 @@ npm run nft_transfer
 npm run nft_burn
 ```
 
-`nft_transfer` sends a bit of SOL with the NFT so the new owner can pay for burn (needed on **devnet** — local airdrop doesn't run there).
+`nft_transfer` also sends a little SOL so the new owner can pay the burn fee.
 
-Burn does not close the account fully. Core leaves a 1-byte tombstone and keeps some lamports. That's the program, not the script.
-
-Devnet:
+devnet:
 
 ```
 RPC_URL=https://api.devnet.solana.com npm run spl_init
 ```
 
-same prefix for the rest. Wallet needs SOL.
+same for the other scripts. need SOL on the wallet.
 
 ## Tests
 
-Needs `solana-test-validator`. First run dumps mpl core into `programs/mpl_core.so`.
+needs `solana-test-validator`. first `npm test` dumps mpl core to `programs/mpl_core.so`.
 
 ```
 npm test

@@ -34,14 +34,14 @@ async function fund(kp: Keypair) {
 }
 
 describe("mpl core", () => {
-  const creator = Keypair.generate();
-  const buyer = Keypair.generate();
+  const payer = Keypair.generate();
+  const other = Keypair.generate();
 
-  it("mint, transfer, then only update authority can rename", async () => {
-    await fund(creator);
-    await fund(buyer);
+  it("cant update after transfer", async () => {
+    await fund(payer);
+    await fund(other);
 
-    const umi = umiFor(creator);
+    const umi = umiFor(payer);
     const asset = generateSigner(umi);
 
     await create(umi, {
@@ -51,20 +51,20 @@ describe("mpl core", () => {
     }).sendAndConfirm(umi);
 
     let nft = await fetchAsset(umi, asset.publicKey);
-    expect(nft.owner).toBe(creator.publicKey.toBase58());
+    expect(nft.owner).toBe(payer.publicKey.toBase58());
 
     await transfer(umi, {
       asset: nft,
-      newOwner: publicKey(buyer.publicKey.toBase58()),
+      newOwner: publicKey(other.publicKey.toBase58()),
     }).sendAndConfirm(umi);
 
     nft = await fetchAsset(umi, asset.publicKey);
-    expect(nft.owner).toBe(buyer.publicKey.toBase58());
+    expect(nft.owner).toBe(other.publicKey.toBase58());
 
-    const buyerUmi = umiFor(buyer);
-    nft = await fetchAsset(buyerUmi, asset.publicKey);
+    const otherUmi = umiFor(other);
+    nft = await fetchAsset(otherUmi, asset.publicKey);
     await expect(
-      update(buyerUmi, { asset: nft, name: "stolen" }).sendAndConfirm(buyerUmi)
+      update(otherUmi, { asset: nft, name: "nope" }).sendAndConfirm(otherUmi)
     ).rejects.toThrow();
 
     nft = await fetchAsset(umi, asset.publicKey);
@@ -76,10 +76,10 @@ describe("mpl core", () => {
 
     nft = await fetchAsset(umi, asset.publicKey);
     expect(nft.name).toBe("week1 v2");
-    expect(nft.owner).toBe(buyer.publicKey.toBase58());
+    expect(nft.owner).toBe(other.publicKey.toBase58());
 
-    nft = await fetchAsset(buyerUmi, asset.publicKey);
-    await burn(buyerUmi, { asset: nft }).sendAndConfirm(buyerUmi);
+    nft = await fetchAsset(otherUmi, asset.publicKey);
+    await burn(otherUmi, { asset: nft }).sendAndConfirm(otherUmi);
 
     const info = await connection.getAccountInfo(new PublicKey(asset.publicKey));
     expect(info).not.toBeNull();
