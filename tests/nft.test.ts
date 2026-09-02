@@ -13,8 +13,8 @@ import { describe, expect, it } from "vitest";
 
 const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 
-const URI = "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/main/metadata/week1.json";
-const URI_V2 = "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/main/metadata/week1-v2.json";
+const URI = "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/c4fece80a1c8c57957c286960f273370f9735a56/metadata/week1.json";
+const URI_V2 = "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/c4fece80a1c8c57957c286960f273370f9735a56/metadata/week1-v2.json";
 
 function umiFor(kp: Keypair) {
   const umi = createUmi("http://127.0.0.1:8899", "confirmed").use(mplCore());

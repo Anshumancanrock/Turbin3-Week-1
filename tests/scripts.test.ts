@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const cluster = path.join(root, "ts/cluster1");
+const tmpWallet = path.join(root, "tests", ".tmp-wallet.json");
 const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 
 async function fund(kp: Keypair) {
@@ -25,7 +25,7 @@ async function fund(kp: Keypair) {
 async function run(script: string) {
   return execFileAsync(path.join(root, "node_modules/.bin/tsx"), [path.join("ts/cluster1", script)], {
     cwd: root,
-    env: process.env,
+    env: { ...process.env, WALLET_PATH: tmpWallet },
   });
 }
 
@@ -33,19 +33,20 @@ describe("cluster1 scripts", () => {
   it("scripts work, update after burn exits 1", async () => {
     const kp = Keypair.generate();
     await fund(kp);
-    fs.writeFileSync(
-      path.join(cluster, "wallet.json"),
-      JSON.stringify(Array.from(kp.secretKey))
-    );
+    fs.writeFileSync(tmpWallet, JSON.stringify(Array.from(kp.secretKey)));
 
-    await run("spl_init.ts");
-    await run("spl_mint.ts");
-    await run("spl_transfer.ts");
-    await run("nft_mint.ts");
-    await run("nft_update.ts");
-    await run("nft_transfer.ts");
-    await run("nft_burn.ts");
+    try {
+      await run("spl_init.ts");
+      await run("spl_mint.ts");
+      await run("spl_transfer.ts");
+      await run("nft_mint.ts");
+      await run("nft_update.ts");
+      await run("nft_transfer.ts");
+      await run("nft_burn.ts");
 
-    await expect(run("nft_update.ts")).rejects.toMatchObject({ code: 1 });
+      await expect(run("nft_update.ts")).rejects.toMatchObject({ code: 1 });
+    } finally {
+      fs.rmSync(tmpWallet, { force: true });
+    }
   });
 });

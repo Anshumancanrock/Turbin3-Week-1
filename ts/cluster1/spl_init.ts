@@ -1,10 +1,9 @@
 import { createMint } from "@solana/spl-token";
 import { airdrop, connection, fail, loadWallet, save } from "./helper.js";
 
-const keypair = loadWallet();
-
 (async () => {
   try {
+    const keypair = loadWallet();
     await airdrop(keypair);
 
     // 6 decimals like usdc

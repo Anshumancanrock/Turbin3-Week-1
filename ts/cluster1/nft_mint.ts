@@ -3,16 +3,15 @@ import { generateSigner } from "@metaplex-foundation/umi";
 import bs58 from "bs58";
 import { airdrop, fail, getUmi, loadWallet, save } from "./helper.js";
 
-const keypair = loadWallet();
-const umi = getUmi(keypair);
-
-const asset = generateSigner(umi);
-
 const URI =
-  "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/main/metadata/week1.json";
+  "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/c4fece80a1c8c57957c286960f273370f9735a56/metadata/week1.json";
 
 (async () => {
   try {
+    const keypair = loadWallet();
+    const umi = getUmi(keypair);
+    const asset = generateSigner(umi);
+
     await airdrop(keypair);
 
     let tx = create(umi, {

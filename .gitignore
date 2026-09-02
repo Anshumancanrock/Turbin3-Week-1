@@ -5,6 +5,7 @@ ts/cluster1/mint.txt
 ts/cluster1/asset.txt
 ts/cluster1/new_owner.txt
 ts/cluster1/spl_to.txt
+tests/.tmp-wallet.json
 programs/*.so
 test-ledger/
 *.log

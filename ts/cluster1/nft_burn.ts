@@ -1,23 +1,17 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { burn, fetchAsset } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import bs58 from "bs58";
 import { airdrop, connection, fail, getUmi, load } from "./helper.js";
 
-const dir = path.dirname(fileURLToPath(import.meta.url));
-const assetAddress = publicKey(load("asset.txt"));
-
-// current owner is the keypair nft_transfer wrote
-const owner = Keypair.fromSecretKey(
-  Uint8Array.from(JSON.parse(fs.readFileSync(path.join(dir, "new_owner.txt"), "utf8")))
-);
-const umi = getUmi(owner);
-
 (async () => {
   try {
+    const assetAddress = publicKey(load("asset.txt"));
+    const owner = Keypair.fromSecretKey(
+      Uint8Array.from(JSON.parse(load("new_owner.txt")))
+    );
+    const umi = getUmi(owner);
+
     await airdrop(owner);
     const asset = await fetchAsset(umi, assetAddress);
 

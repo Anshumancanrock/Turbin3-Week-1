@@ -2,15 +2,13 @@ import { PublicKey } from "@solana/web3.js";
 import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
 import { airdrop, connection, fail, load, loadWallet } from "./helper.js";
 
-const keypair = loadWallet();
-
-// paste from spl_init if mint.txt is missing
-const mint = new PublicKey(load("mint.txt"));
 const token_decimals = 1_000_000n;
 
 (async () => {
   try {
+    const keypair = loadWallet();
     await airdrop(keypair);
+    const mint = new PublicKey(load("mint.txt"));
 
     const ata = await getOrCreateAssociatedTokenAccount(
       connection,

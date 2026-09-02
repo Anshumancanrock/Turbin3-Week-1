@@ -22,9 +22,9 @@ export const RPC = process.env.RPC_URL || "http://127.0.0.1:8899";
 export const connection = new Connection(RPC, "confirmed");
 
 export function loadWallet() {
-  const walletPath = path.join(dir, "wallet.json");
+  const walletPath = process.env.WALLET_PATH || path.join(dir, "wallet.json");
   if (!fs.existsSync(walletPath)) {
-    throw new Error("missing ts/cluster1/wallet.json, copy your id.json there");
+    throw new Error(`missing ${walletPath}, copy your id.json there`);
   }
   const secret = JSON.parse(fs.readFileSync(walletPath, "utf8"));
   return Keypair.fromSecretKey(Uint8Array.from(secret));
@@ -73,10 +73,14 @@ export function save(name: string, value: string) {
 }
 
 export function load(name: string) {
-  return fs.readFileSync(path.join(dir, name), "utf8").trim();
+  const p = path.join(dir, name);
+  if (!fs.existsSync(p)) {
+    throw new Error(`missing ${name}, run the previous script first`);
+  }
+  return fs.readFileSync(p, "utf8").trim();
 }
 
 export function fail(error: unknown): never {
-  console.log(`Oops, something went wrong: ${error}`);
+  console.error(`Oops, something went wrong: ${error}`);
   process.exit(1);
 }

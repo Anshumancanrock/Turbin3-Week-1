@@ -6,14 +6,13 @@ import {
 } from "@solana/spl-token";
 import { airdrop, connection, fail, load, loadWallet, save } from "./helper.js";
 
-const keypair = loadWallet();
-const mint = new PublicKey(load("mint.txt"));
 const token_decimals = 1_000_000n;
 
 (async () => {
   try {
+    const keypair = loadWallet();
     await airdrop(keypair);
-
+    const mint = new PublicKey(load("mint.txt"));
     const to = Keypair.generate();
 
     const fromAta = await getOrCreateAssociatedTokenAccount(

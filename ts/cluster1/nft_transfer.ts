@@ -4,13 +4,12 @@ import { publicKey } from "@metaplex-foundation/umi";
 import bs58 from "bs58";
 import { airdrop, fail, getUmi, load, loadWallet, save, sendSol } from "./helper.js";
 
-const keypair = loadWallet();
-const umi = getUmi(keypair);
-const assetAddress = publicKey(load("asset.txt"));
-
 (async () => {
   try {
+    const keypair = loadWallet();
+    const umi = getUmi(keypair);
     await airdrop(keypair);
+    const assetAddress = publicKey(load("asset.txt"));
 
     const to = Keypair.generate();
     await sendSol(keypair, to.publicKey);

@@ -38,7 +38,7 @@ same for the other scripts. need SOL on the wallet.
 
 ## Tests
 
-needs `solana-test-validator`. first `npm test` dumps mpl core to `programs/mpl_core.so`.
+needs `solana-test-validator`. first `npm test` dumps mpl core to `programs/mpl_core.so`. tests use a temp wallet, they wont overwrite `ts/cluster1/wallet.json`.
 
 ```
 npm test
