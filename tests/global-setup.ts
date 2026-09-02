@@ -1,5 +1,6 @@
-import { spawn, type ChildProcess } from "child_process";
+import { spawn, execFileSync, type ChildProcess } from "child_process";
 import fs from "fs";
+import net from "net";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -11,6 +12,25 @@ const CORE = "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function portOpen(port: number) {
+  return new Promise<boolean>((resolve) => {
+    const sock = net.connect({ port, host: "127.0.0.1" });
+    sock.once("connect", () => {
+      sock.end();
+      resolve(true);
+    });
+    sock.once("error", () => resolve(false));
+  });
+}
+
+function freePort(port: number) {
+  try {
+    execFileSync("fuser", ["-k", `${port}/tcp`], { stdio: "ignore" });
+  } catch {
+    // nothing listening
+  }
 }
 
 async function dumpCore() {
@@ -30,6 +50,12 @@ async function dumpCore() {
 
 export default async function setup() {
   await dumpCore();
+
+  // leftover validator from a killed npm test holds 8899/8900
+  freePort(8899);
+  freePort(8900);
+  await sleep(500);
+
   fs.rmSync(ledger, { recursive: true, force: true });
 
   const validator: ChildProcess = spawn(
@@ -41,16 +67,21 @@ export default async function setup() {
 
   const connection = new Connection("http://127.0.0.1:8899", "confirmed");
   const start = Date.now();
-  while (Date.now() - start < 60000) {
+  let ready = false;
+  while (Date.now() - start < 90_000) {
     try {
       await connection.getLatestBlockhash();
-      break;
+      if (await portOpen(8900)) {
+        ready = true;
+        break;
+      }
     } catch {
-      await sleep(400);
+      // still booting
     }
+    await sleep(400);
   }
+  if (!ready) throw new Error("validator did not come up");
 
-  // first airdrop after startup sometimes no-ops
   const kp = Keypair.generate();
   const sig = await connection.requestAirdrop(kp.publicKey, LAMPORTS_PER_SOL);
   const latest = await connection.getLatestBlockhash();

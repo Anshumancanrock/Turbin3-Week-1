@@ -3,6 +3,7 @@ import { publicKey } from "@metaplex-foundation/umi";
 import bs58 from "bs58";
 import { airdrop, fail, getUmi, load, loadWallet } from "./helper.js";
 
+// same commit as mint, week1-v2.json
 const URI =
   "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/c4fece80a1c8c57957c286960f273370f9735a56/metadata/week1-v2.json";
 
