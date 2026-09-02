@@ -1,7 +1,15 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { keypairIdentity } from "@metaplex-foundation/umi";
 import { mplCore } from "@metaplex-foundation/mpl-core";
@@ -39,12 +47,25 @@ export async function airdrop(kp: Keypair) {
   const latest = await connection.getLatestBlockhash();
   await connection.confirmTransaction({ signature: sig, ...latest }, "confirmed");
 
-  // wait until it actually shows up, faucet is annoying
   for (let i = 0; i < 40; i++) {
     const b = await connection.getBalance(kp.publicKey);
     if (b > LAMPORTS_PER_SOL) return;
     await new Promise((r) => setTimeout(r, 250));
   }
+
+  throw new Error("airdrop did not land");
+}
+
+// works on localnet and devnet — new owner needs SOL to burn later
+export async function sendSol(from: Keypair, to: PublicKey, lamports = 10_000_000) {
+  const tx = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: from.publicKey,
+      toPubkey: to,
+      lamports,
+    })
+  );
+  await sendAndConfirmTransaction(connection, tx, [from]);
 }
 
 export function save(name: string, value: string) {
@@ -53,4 +74,9 @@ export function save(name: string, value: string) {
 
 export function load(name: string) {
   return fs.readFileSync(path.join(dir, name), "utf8").trim();
+}
+
+export function fail(error: unknown): never {
+  console.log(`Oops, something went wrong: ${error}`);
+  process.exit(1);
 }

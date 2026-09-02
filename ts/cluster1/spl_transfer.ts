@@ -4,18 +4,17 @@ import {
   getOrCreateAssociatedTokenAccount,
   transfer,
 } from "@solana/spl-token";
-import { airdrop, connection, load, loadWallet } from "./helper.ts";
+import { airdrop, connection, fail, load, loadWallet, save } from "./helper.js";
 
 const keypair = loadWallet();
 const mint = new PublicKey(load("mint.txt"));
 const token_decimals = 1_000_000n;
 
-// random dest so i dont have to ask someone for a pubkey
-const to = Keypair.generate();
-
 (async () => {
   try {
     await airdrop(keypair);
+
+    const to = Keypair.generate();
 
     const fromAta = await getOrCreateAssociatedTokenAccount(
       connection,
@@ -39,6 +38,8 @@ const to = Keypair.generate();
       250n * token_decimals
     );
 
+    save("spl_to.txt", JSON.stringify(Array.from(to.secretKey)));
+
     const fromBal = await getAccount(connection, fromAta.address);
     const toBal = await getAccount(connection, toAta.address);
 
@@ -47,6 +48,6 @@ const to = Keypair.generate();
     console.log("my balance:", Number(fromBal.amount) / 1_000_000);
     console.log("their balance:", Number(toBal.amount) / 1_000_000);
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();

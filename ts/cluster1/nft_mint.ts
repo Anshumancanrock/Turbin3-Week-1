@@ -1,12 +1,15 @@
 import { create, fetchAsset } from "@metaplex-foundation/mpl-core";
 import { generateSigner } from "@metaplex-foundation/umi";
 import bs58 from "bs58";
-import { airdrop, getUmi, loadWallet, save } from "./helper.ts";
+import { airdrop, fail, getUmi, loadWallet, save } from "./helper.js";
 
 const keypair = loadWallet();
 const umi = getUmi(keypair);
 
 const asset = generateSigner(umi);
+
+const URI =
+  "https://raw.githubusercontent.com/Anshumancanrock/Turbin3-Week-1/main/metadata/week1.json";
 
 (async () => {
   try {
@@ -15,7 +18,7 @@ const asset = generateSigner(umi);
     let tx = create(umi, {
       asset,
       name: "week1",
-      uri: "https://example.com/week1.json",
+      uri: URI,
     });
 
     let result = await tx.sendAndConfirm(umi);
@@ -30,6 +33,6 @@ const asset = generateSigner(umi);
     console.log("name:", fetched.name);
     console.log("owner:", fetched.owner);
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();

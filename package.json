@@ -11,7 +11,8 @@
     "nft_update": "tsx ts/cluster1/nft_update.ts",
     "nft_transfer": "tsx ts/cluster1/nft_transfer.ts",
     "nft_burn": "tsx ts/cluster1/nft_burn.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-core": "^1.9.0",

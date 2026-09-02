@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
-import { airdrop, connection, load, loadWallet } from "./helper.ts";
+import { airdrop, connection, fail, load, loadWallet } from "./helper.js";
 
 const keypair = loadWallet();
 
@@ -31,6 +31,6 @@ const token_decimals = 1_000_000n;
     );
     console.log(`Your mint txid: ${mintTx}`);
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();

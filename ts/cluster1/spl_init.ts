@@ -1,5 +1,5 @@
 import { createMint } from "@solana/spl-token";
-import { airdrop, connection, loadWallet, save } from "./helper.ts";
+import { airdrop, connection, fail, loadWallet, save } from "./helper.js";
 
 const keypair = loadWallet();
 
@@ -19,6 +19,6 @@ const keypair = loadWallet();
     console.log(`Your mint address: ${mint.toBase58()}`);
     save("mint.txt", mint.toBase58());
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();

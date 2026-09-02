@@ -2,7 +2,7 @@ import { Keypair } from "@solana/web3.js";
 import { fetchAsset, transfer } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
 import bs58 from "bs58";
-import { airdrop, getUmi, load, loadWallet, save } from "./helper.ts";
+import { airdrop, fail, getUmi, load, loadWallet, save, sendSol } from "./helper.js";
 
 const keypair = loadWallet();
 const umi = getUmi(keypair);
@@ -12,17 +12,18 @@ const assetAddress = publicKey(load("asset.txt"));
   try {
     await airdrop(keypair);
 
-    // need this keypair funded — they pay the burn tx later
     const to = Keypair.generate();
-    await airdrop(to);
-    save("new_owner.txt", JSON.stringify(Array.from(to.secretKey)));
+    // so burn works on devnet too, not just local airdrop
+    await sendSol(keypair, to.publicKey);
 
     const asset = await fetchAsset(umi, assetAddress);
 
     let result = await transfer(umi, {
       asset,
-      newOwner: to.publicKey.toBase58(),
+      newOwner: publicKey(to.publicKey.toBase58()),
     }).sendAndConfirm(umi);
+
+    save("new_owner.txt", JSON.stringify(Array.from(to.secretKey)));
 
     console.log("new owner:", to.publicKey.toBase58());
     console.log("txid:", bs58.encode(result.signature));
@@ -30,6 +31,6 @@ const assetAddress = publicKey(load("asset.txt"));
     const after = await fetchAsset(umi, assetAddress);
     console.log("owner now:", after.owner);
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();

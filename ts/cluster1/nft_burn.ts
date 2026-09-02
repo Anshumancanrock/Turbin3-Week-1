@@ -1,11 +1,11 @@
-import { Keypair } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import { burn, fetchAsset } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import bs58 from "bs58";
-import { airdrop, getUmi, load } from "./helper.ts";
+import { airdrop, connection, fail, getUmi, load } from "./helper.js";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const assetAddress = publicKey(load("asset.txt"));
@@ -24,13 +24,10 @@ const umi = getUmi(owner);
     let result = await burn(umi, { asset }).sendAndConfirm(umi);
     console.log("burned:", bs58.encode(result.signature));
 
-    try {
-      await fetchAsset(umi, assetAddress);
-      console.log("still there?");
-    } catch {
-      console.log("account closed");
-    }
+    // core doesn't fully close the account — it leaves a 1-byte tombstone
+    const info = await connection.getAccountInfo(new PublicKey(assetAddress));
+    console.log("tombstone bytes:", info?.data.length, "lamports left:", info?.lamports);
   } catch (error) {
-    console.log(`Oops, something went wrong: ${error}`);
+    fail(error);
   }
 })();
